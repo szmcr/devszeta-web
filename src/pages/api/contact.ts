@@ -18,34 +18,7 @@ interface ValidationError {
   message: string;
 }
 
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 3;
 const MIN_FORM_FILL_TIME = 3000; // 3 seconds minimum to fill form
-
-const requestCounts = new Map<string, { count: number; timestamp: number }>();
-
-function getClientIP(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  return forwarded?.split(',')[0].trim() || realIP || 'unknown';
-}
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = requestCounts.get(ip);
-
-  if (!record || now - record.timestamp > RATE_LIMIT_WINDOW) {
-    requestCounts.set(ip, { count: 1, timestamp: now });
-    return true;
-  }
-
-  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
-    return false;
-  }
-
-  record.count++;
-  return true;
-}
 
 function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -226,21 +199,6 @@ export const POST: APIRoute = async ({ request }) => {
       SUPABASE_ANON_KEY: import.meta.env.SUPABASE_ANON_KEY ? 'Set' : 'Missing',
     });
     
-    // Rate limiting check
-    const clientIP = getClientIP(request);
-    if (!checkRateLimit(clientIP)) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Demasiadas solicitudes. Por favor intenta de nuevo en un minuto.',
-        }),
-        {
-          status: 429,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
     // Parse form data
     const contentType = request.headers.get('content-type');
     let formData: ContactFormData;
