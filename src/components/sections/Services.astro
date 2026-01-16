@@ -1,0 +1,63 @@
+---
+import SectionTitle from "../ui/SectionTitle.astro";
+import Card from "../ui/Card.astro";
+import { useTranslations, type Language } from "../../i18n";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const services = [
+  {
+    icon: "/desarrollo-web.svg",
+    title: t("services.web.title"),
+    description: t("services.web.description"),
+  },
+  {
+    icon: "/analitica-datos.svg",
+    title: t("services.analytics.title"),
+    description: t("services.analytics.description"),
+  },
+  {
+    icon: "/ecommerce.svg",
+    title: t("services.ecommerce.title"),
+    description: t("services.ecommerce.description"),
+  },
+  {
+    icon: "/optimizacion-web.svg",
+    title: t("services.optimization.title"),
+    description: t("services.optimization.description"),
+  },
+  {
+    icon: "/diseno-ui-ux.svg",
+    title: t("services.design.title"),
+    description: t("services.design.description"),
+  },
+  {
+    icon: "/mantenimiento.svg",
+    title: t("services.maintenance.title"),
+    description: t("services.maintenance.description"),
+  },
+];
+---
+
+<section id="servicios" class="py-20 md:py-32">
+  <div class="container mx-auto px-4">
+    <SectionTitle subtitle={t("services.subtitle")}>
+      {t("services.title")}
+    </SectionTitle>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {services.map((service) => (
+        <Card>
+          <img src={service.icon} alt={service.title} class="w-30 h-30 mb-4" />
+          <h3 class="text-xl font-semibold text-white mb-3">{service.title}</h3>
+          <p class="text-white/60 text-sm leading-relaxed">{service.description}</p>
+        </Card>
+      ))}
+    </div>
+  </div>
+</section>

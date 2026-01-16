@@ -1,0 +1,138 @@
+---
+import Navigation from "./Navigation.astro";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import { useTranslations, type Language } from "../i18n";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// Detect if we're on the home page
+const isHomePage = Astro.url.pathname === "/" || Astro.url.pathname === "/en" || Astro.url.pathname === "/en/";
+const homeBase = lang === "en" ? "/en" : "/";
+
+const navItems = [
+  { label: t("nav.home"), href: isHomePage ? "#inicio" : `${homeBase}#inicio` },
+  { label: t("nav.services"), href: isHomePage ? "#servicios" : `${homeBase}#servicios` },
+  { label: t("nav.portfolio"), href: isHomePage ? "#portafolio" : `${homeBase}#portafolio` },
+  { label: t("nav.about"), href: isHomePage ? "#nosotros" : `${homeBase}#nosotros` },
+  { label: t("nav.contact"), href: isHomePage ? "#contacto" : `${homeBase}#contacto` },
+];
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-primary/90 backdrop-blur-md border-b border-white/10">
+  <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2">
+      <img src="/devszeta-logo-white.png" alt="DevSZeta Logo" class="h-16 w-16" />
+    </a>
+    
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex items-center gap-4">
+      <Navigation items={navItems} ctaLabel={t("nav.cta")} ctaHref={isHomePage ? "#contacto" : `${homeBase}#contacto`} />
+      <LanguageSwitcher currentLang={lang} />
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <div class="flex md:hidden items-center gap-3">
+      <LanguageSwitcher currentLang={lang} />
+      <button 
+        id="mobile-menu-btn"
+        class="flex flex-col gap-1.5 p-2"
+        aria-label="Abrir menú"
+      >
+        <span class="block w-6 h-0.5 bg-white transition-all origin-center" id="line1"></span>
+        <span class="block w-6 h-0.5 bg-white transition-all" id="line2"></span>
+        <span class="block w-6 h-0.5 bg-white transition-all origin-center" id="line3"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div 
+    id="mobile-menu" 
+    class="md:hidden absolute top-full left-0 right-0 bg-primary/95 backdrop-blur-md border-b border-white/10 overflow-hidden transition-all duration-300 ease-out"
+    style="max-height: 0; opacity: 0;"
+  >
+    <nav class="container mx-auto px-4 py-6 flex flex-col items-center gap-4">
+      {navItems.map((item, index) => (
+        <a 
+          href={item.href} 
+          class="mobile-nav-link text-lg font-medium text-white/80 hover:text-accent transition-all duration-300 translate-y-4 opacity-0"
+          style={`transition-delay: ${index * 50}ms`}
+        >
+          {item.label}
+        </a>
+      ))}
+      <a 
+        href={isHomePage ? "#contacto" : `${homeBase}#contacto`} 
+        class="mobile-nav-link btn-primary mt-2 translate-y-4 opacity-0"
+        style={`transition-delay: ${navItems.length * 50}ms`}
+      >
+        {t("nav.cta")}
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+  const line1 = document.getElementById('line1');
+  const line2 = document.getElementById('line2');
+  const line3 = document.getElementById('line3');
+  
+  let isOpen = false;
+
+  function openMenu() {
+    if (mobileMenu) {
+      mobileMenu.style.maxHeight = '400px';
+      mobileMenu.style.opacity = '1';
+    }
+    // Animate links in
+    mobileLinks.forEach(link => {
+      link.classList.remove('translate-y-4', 'opacity-0');
+      link.classList.add('translate-y-0', 'opacity-100');
+    });
+    // Animate hamburger to X
+    line1?.classList.add('rotate-45', 'translate-y-2');
+    line2?.classList.add('opacity-0');
+    line3?.classList.add('-rotate-45', '-translate-y-2');
+  }
+
+  function closeMenu() {
+    if (mobileMenu) {
+      mobileMenu.style.maxHeight = '0';
+      mobileMenu.style.opacity = '0';
+    }
+    // Animate links out
+    mobileLinks.forEach(link => {
+      link.classList.add('translate-y-4', 'opacity-0');
+      link.classList.remove('translate-y-0', 'opacity-100');
+    });
+    // Animate X to hamburger
+    line1?.classList.remove('rotate-45', 'translate-y-2');
+    line2?.classList.remove('opacity-0');
+    line3?.classList.remove('-rotate-45', '-translate-y-2');
+  }
+
+  menuBtn?.addEventListener('click', () => {
+    isOpen = !isOpen;
+    if (isOpen) {
+      openMenu();
+    } else {
+      closeMenu();
+    }
+  });
+
+  // Close menu when clicking a link
+  mobileLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      isOpen = false;
+      closeMenu();
+    });
+  });
+</script>

@@ -1,0 +1,31 @@
+---
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items: NavItem[];
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const { items, ctaLabel = "Cotizar Proyecto", ctaHref = "#contacto" } = Astro.props;
+---
+
+<nav class="flex items-center gap-8">
+  {items.map((item) => (
+    <a 
+      href={item.href} 
+      class="text-md font-medium text-white/80 hover:text-accent transition-colors duration-300"
+    >
+      {item.label}
+    </a>
+  ))}
+  <a 
+    href={ctaHref} 
+    class="btn-primary"
+  >
+    {ctaLabel}
+  </a>
+</nav>

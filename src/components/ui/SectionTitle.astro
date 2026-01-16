@@ -1,0 +1,25 @@
+---
+interface Props {
+  subtitle?: string;
+  align?: "left" | "center" | "right";
+}
+
+const { subtitle, align = "center" } = Astro.props;
+
+const alignments = {
+  left: "text-left",
+  center: "text-center",
+  right: "text-right",
+};
+---
+
+<div class={`mb-12 ${alignments[align]}`}>
+  {subtitle && (
+    <span class="text-accent text-sm font-medium uppercase tracking-wider mb-2 block">
+      {subtitle}
+    </span>
+  )}
+  <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+    <slot />
+  </h2>
+</div>

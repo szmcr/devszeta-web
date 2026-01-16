@@ -1,0 +1,64 @@
+---
+interface Props {
+  src: string;
+  class?: string;
+  loop?: boolean;
+  autoplay?: boolean;
+}
+
+const { 
+  src, 
+  class: className = "", 
+  loop = true, 
+  autoplay = true 
+} = Astro.props;
+
+const containerId = `lottie-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div 
+  id={containerId} 
+  class={className}
+  data-lottie-src={src}
+  data-lottie-loop={loop.toString()}
+  data-lottie-autoplay={autoplay.toString()}
+></div>
+
+<script>
+  import lottie, { type AnimationItem } from 'lottie-web';
+
+  const animations = new Map<HTMLElement, AnimationItem>();
+
+  function initLottieAnimations() {
+    // Clear existing animations
+    animations.forEach((anim) => {
+      anim.destroy();
+    });
+    animations.clear();
+
+    // Initialize all Lottie animations on the page
+    document.querySelectorAll('[data-lottie-src]').forEach((container) => {
+      const src = container.getAttribute('data-lottie-src');
+      const loop = container.getAttribute('data-lottie-loop') === 'true';
+      const autoplay = container.getAttribute('data-lottie-autoplay') === 'true';
+
+      if (src) {
+        const animation = lottie.loadAnimation({
+          container: container as HTMLElement,
+          renderer: 'svg',
+          loop,
+          autoplay,
+          path: src,
+        });
+        
+        animations.set(container as HTMLElement, animation);
+      }
+    });
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initLottieAnimations);
+  
+  // Re-initialize on Astro page transitions (View Transitions API)
+  document.addEventListener('astro:page-load', initLottieAnimations);
+</script>

@@ -1,0 +1,53 @@
+---
+import Button from "../ui/Button.astro";
+import LottieAnimation from "../LottieAnimation.astro";
+import { useTranslations, type Language } from "../../i18n";
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="inicio" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+  <!-- Lottie Animation Background -->
+  <div class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+    <LottieAnimation 
+      src="/animations/developer.json" 
+      class="w-full h-full max-w-4xl"
+    />
+  </div>
+  
+  <!-- Background gradient -->
+  <div class="absolute inset-0 bg-gradient-to-b from-accent/10 via-transparent to-transparent"></div>
+  
+  <!-- Decorative elements -->
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
+  
+  <div class="container mx-auto px-4 text-center relative z-10">
+    <span class="inline-block px-4 py-2 bg-accent/20 text-accent rounded-full text-sm font-medium mb-6">
+      {t("hero.badge")}
+    </span>
+    
+    <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+      {t("hero.title.line1")}<br />
+      <span class="text-accent">{t("hero.title.line2")}</span>
+    </h1>
+    
+    <p class="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-10">
+      {t("hero.description")}
+    </p>
+    
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <Button href="#contacto" variant="primary" size="lg">
+        {t("hero.cta.primary")}
+      </Button>
+      <Button href="#portafolio" variant="outline" size="lg">
+        {t("hero.cta.secondary")}
+      </Button>
+    </div>
+  </div>
+</section>
